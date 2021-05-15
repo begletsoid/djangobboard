@@ -1,0 +1,175 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <Name>bboard</Name>
+    <RootNamespace>bboard</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>5afce69c-a939-434d-8f1c-35e6b2701af1</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <ProjectTypeGuids>{5F0BE9CA-D677-4A4D-8806-6076C0FAAD37};{349c5851-65df-11da-9384-00065b846f21};{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
+    <StartupFile>manage.py</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <LaunchProvider>Django launcher</LaunchProvider>
+    <DjangoSettingsModule>bboard.settings</DjangoSettingsModule>
+    <WebBrowserUrl>http://localhost</WebBrowserUrl>
+    <OutputPath>.</OutputPath>
+    <SuppressCollectPythonCloudServiceFiles>true</SuppressCollectPythonCloudServiceFiles>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="api\admin.py" />
+    <Compile Include="api\apps.py" />
+    <Compile Include="api\migrations\__init__.py" />
+    <Compile Include="api\models.py" />
+    <Compile Include="api\serializers.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="api\tests.py" />
+    <Compile Include="api\urls.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="api\views.py" />
+    <Compile Include="api\__init__.py" />
+    <Compile Include="main\admin.py" />
+    <Compile Include="main\apps.py" />
+    <Compile Include="main\forms.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="main\middlewares.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="main\migrations\__init__.py" />
+    <Compile Include="main\models.py" />
+    <Compile Include="main\tests.py" />
+    <Compile Include="main\urls.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="main\utilities.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="main\views.py" />
+    <Compile Include="main\__init__.py" />
+    <Compile Include="manage.py" />
+    <Compile Include="bboard\__init__.py" />
+    <Compile Include="bboard\settings.py" />
+    <Compile Include="bboard\urls.py" />
+    <Compile Include="bboard\wsgi.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include=".gitignore" />
+    <Content Include="main\static\main\bg.jpg" />
+    <Content Include="main\static\main\empty.jpg" />
+    <Content Include="main\static\main\style.css" />
+    <Content Include="main\templates\email\activation_letter_body.txt" />
+    <Content Include="main\templates\email\activation_letter_subject.txt" />
+    <Content Include="main\templates\email\new_comment_letter_body.txt" />
+    <Content Include="main\templates\email\new_comment_letter_subject.txt" />
+    <Content Include="main\templates\layout\basic.html" />
+    <Content Include="main\templates\main\about.html" />
+    <Content Include="main\templates\main\activation_done.html" />
+    <Content Include="main\templates\main\bad_signature.html" />
+    <Content Include="main\templates\main\by_rubric.html" />
+    <Content Include="main\templates\main\change_user_info.html" />
+    <Content Include="main\templates\main\delete_user.html" />
+    <Content Include="main\templates\main\detail.html" />
+    <Content Include="main\templates\main\index.html" />
+    <Content Include="main\templates\main\login.html" />
+    <Content Include="main\templates\main\logout.html" />
+    <Content Include="main\templates\main\password_change.html" />
+    <Content Include="main\templates\main\profile.html" />
+    <Content Include="main\templates\main\profile_bb_add.html" />
+    <Content Include="main\templates\main\profile_bb_change.html" />
+    <Content Include="main\templates\main\profile_bb_delete.html" />
+    <Content Include="main\templates\main\profile_bb_detail.html" />
+    <Content Include="main\templates\main\register_done.html" />
+    <Content Include="main\templates\main\register_user.html" />
+    <Content Include="main\templates\main\user_is_activated.html" />
+    <Content Include="media\1620922189.30132.png" />
+    <Content Include="media\1620922189.30432.png" />
+    <Content Include="media\1620923016.579637.jpg" />
+    <Content Include="media\1620923016.582638.jpg" />
+    <Content Include="media\1620982765.833839.jpg" />
+    <Content Include="media\1620982765.840839.jpg" />
+    <Content Include="media\1620982765.84484.jpg" />
+    <Content Include="media\thumbnails\1620897829.829038.jpg.96x96_q85_crop-scale.jpg" />
+    <Content Include="media\thumbnails\1620918436.686683.png.96x96_q85_crop-scale.png" />
+    <Content Include="media\thumbnails\1620921694.131998.jpg.96x96_q85_crop-scale.jpg" />
+    <Content Include="media\thumbnails\1620922189.30132.png.400x300_q85_crop-smart.png" />
+    <Content Include="media\thumbnails\1620922189.30132.png.96x96_q85_crop-scale.png" />
+    <Content Include="media\thumbnails\1620923016.579637.jpg.400x300_q85_crop-smart.jpg" />
+    <Content Include="media\thumbnails\1620923016.579637.jpg.96x96_q85_crop-scale.jpg" />
+    <Content Include="media\thumbnails\1620982765.833839.jpg.96x96_q85_crop-scale.jpg" />
+    <Content Include="media\thumbnails\1620989559.623281.jpg.96x96_q85_crop-scale.jpg" />
+    <Content Include="media\thumbnails\1620989580.910499.jpg.96x96_q85_crop-scale.jpg" />
+    <Content Include="media\thumbnails\1620989615.700489.jpg.96x96_q85_crop-scale.jpg" />
+    <Content Include="media\thumbnails\1620994865.604766.jpg.96x96_q85_crop-scale.jpg" />
+    <Content Include="requirements.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="api\" />
+    <Folder Include="api\migrations\" />
+    <Folder Include="bboard\" />
+    <Folder Include="main\" />
+    <Folder Include="main\migrations\" />
+    <Folder Include="main\static\" />
+    <Folder Include="main\static\main\" />
+    <Folder Include="main\templates\" />
+    <Folder Include="main\templates\layout\" />
+    <Folder Include="main\templates\main\" />
+    <Folder Include="main\templates\email\" />
+    <Folder Include="media\" />
+    <Folder Include="media\thumbnails\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.Django.targets" />
+  <!-- Specify pre- and post-build commands in the BeforeBuild and 
+       AfterBuild targets below. -->
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <AutoAssignPort>True</AutoAssignPort>
+          <UseCustomServer>True</UseCustomServer>
+          <CustomServerUrl>http://localhost</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}" User="">
+        <WebProjectProperties>
+          <StartPageUrl>
+          </StartPageUrl>
+          <StartAction>CurrentPage</StartAction>
+          <AspNetDebugging>True</AspNetDebugging>
+          <SilverlightDebugging>False</SilverlightDebugging>
+          <NativeDebugging>False</NativeDebugging>
+          <SQLDebugging>False</SQLDebugging>
+          <ExternalProgram>
+          </ExternalProgram>
+          <StartExternalURL>
+          </StartExternalURL>
+          <StartCmdLineArguments>
+          </StartCmdLineArguments>
+          <StartWorkingDirectory>
+          </StartWorkingDirectory>
+          <EnableENC>False</EnableENC>
+          <AlwaysStartWebServerOnDebug>False</AlwaysStartWebServerOnDebug>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
