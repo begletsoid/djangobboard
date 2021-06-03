@@ -1,13 +1,14 @@
 from django.db import models
 from django.db.models.signals import post_save
 from django.contrib.auth.models import AbstractUser
-from .utilities import get_timestamp_path, send_new_comment_notification
+from phonenumber_field.modelfields import PhoneNumberField
+from .utilities import get_timestamp_path
 
 class AdvUser(AbstractUser):
     is_activated = models.BooleanField(default=True, db_index=True,
                                       verbose_name = 'Activated?')
     send_messages = models.BooleanField(default=True,
-                                        verbose_name='Allow alerts?')
+                                        verbose_name='Разрешить сообщения')
 
     def delete(self, *args, **kwargs):
         for bb in self.bb_set.all():
@@ -69,12 +70,18 @@ class Bb(models.Model):
     contacts = models.TextField(verbose_name = 'Контакты')
     image = models.ImageField(blank=True, upload_to = get_timestamp_path,
                               verbose_name = 'Изображение')
+    phone_number = PhoneNumberField(blank=True, verbose_name='Номер телефона')
     author = models.ForeignKey(AdvUser, on_delete=models.CASCADE,
                                verbose_name = 'Автор объявления')
     is_active = models.BooleanField(default = True, db_index=True,
                                     verbose_name = 'Выводить в списке?')
     created_at = models.DateField(auto_now_add=True, db_index=True,
                                   verbose_name = 'Опубликовано')
+    views = models.IntegerField(default = 0, verbose_name = 'Просмотры')
+    likes = models.ManyToManyField(AdvUser, related_name='bb_post')
+
+    def total_likes(self):
+        return self.likes.count()
 
     def delete(self, *args, **kwargs):
         for ai in self.additionalimage_set.all():
@@ -121,4 +128,16 @@ def post_save_dispatcher(sender, **kwargs):
     if kwargs['created'] and author.send_messages:
         send_new_comment_notification(kwargs['instance'])
 
+class PageHit(models.Model):
+    url = models.CharField(unique=True, max_length = 999)
+    count = models.PositiveIntegerField(default=0)
 #post_save.connect(post_save_dispatcher, sender = Comment)
+
+
+class RecentBbs(models.Model):
+    user = models.ForeignKey(AdvUser, on_delete=models.CASCADE)
+    bb = models.ForeignKey(Bb, on_delete=models.CASCADE)
+    attended_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-attended_at']

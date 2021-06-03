@@ -1,14 +1,22 @@
-﻿{% extends 'layout/basic.html' %}
-
+{% extends 'layout/profile.html' %}
+{% load thumbnail %}
+{% load static %}
 {% load bootstrap4 %}
 
 {% block title %}Правка личных данных{% endblock %}
 
-{% block content %}
-<h2>Правка личных данных пользователя {{ user.username }}</h2>
+{% block profile_content %}
+<h2>Настройки</h2>
 <form method="post">
     {% csrf_token %}
     {% bootstrap_form form layout='horisontal' %}
-    {% buttons submit='Сохранить' %}{% endbuttons %}
+    <div class="d-flex justify-content-between">
+        {% buttons submit='Сохранить' %}{% endbuttons %}
+        <a href="{% url 'main:password_change' %}" class="btn btn-secondary" style="height: 38px;">Сменить пароль</a>
+    </div>
+    <div class="d-flex justify-content-end">
+        <a href="{% url 'main:profile_delete' %}"
+           class="btn btn-danger" style="height: 38px;">Удалить</a>
+    </div>
 </form>
 {% endblock %}

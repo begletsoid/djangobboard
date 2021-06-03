@@ -74,7 +74,7 @@ class CommentsInline(admin.TabularInline):
 class BbAdmin(admin.ModelAdmin):
     list_display = ('rubric', 'title', 'content', 'author', 'created_at')
     fields = (('rubric', 'author'), 'title', 'content', 'price',
-              'contacts', 'image', 'is_active')
+              'contacts', 'image', 'is_active', 'phone_number')
     inlines = (AdditionalImageInline, CommentsInline)
 
 

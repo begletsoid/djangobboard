@@ -1,0 +1,70 @@
+{% extends 'layout/basic2.html' %}
+{% load thumbnail %}
+{% load static %}
+{% load bootstrap4 %}
+{% load crispy_forms_tags %}
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-2"></div>
+    <div class="col-6">
+        <div class="row"><span class="h3">Рекоммендации для вас</span></div>
+        <div class="row">
+            {% for bb in bbs %}
+            {% url 'main:detail' rubric_pk=rubric.pk pk=bb.pk as url %}
+            <div class="card" style="width: 13rem; margin: 4px; height: 16rem; border:hidden">
+                <a href="{% url 'main:detail' rubric_pk=bb.rubric.pk pk=bb.pk %}">
+                    {% if bb.image %}
+                    <img class="card-img-top border" src="{% thumbnail bb.image 'default' %}"
+                         alt="Card image cap">
+                    {% else %}
+                    <img class="card-img-top border" style="width: 206px; height: 155px"
+                         src="{% static 'main/empty.jpg' %}">
+                    {% endif %}
+                    <p class="h6" style="margin-top: 5px; margin-bottom: 4px">
+                       {{ bb.title }}</p>
+                </a>
+                <div>
+                    <p style="margin: 0;" class="font-weight-bold">
+                        {{ bb.price }}
+                        <span style="font-size: 90%; font-family: 'Arial Rub',Arial,
+                            'Helvetica Neue',Helvetica,sans-serif; line-height: 1;">₽</span>
+                    </p>
+                    <p class="text-muted">{{ bb.created_at }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-4">
+        {% if user.recentbbs_set.all %}
+        <h5>Вы смотрели</h5>
+        {% for b in user.recentbbs_set.all %}
+        <div class="media mt-3">
+            <a href="{% url 'main:detail' rubric_pk=b.bb.rubric.pk pk=b.bb.pk %}">
+                <img class="mr-3" src="{% thumbnail b.bb.image 'recent' %}"
+                     alt="Generic placeholder image">
+            </a>
+                <div class="media-body">
+                    <div class="d-flex">
+                        <a href="{% url 'main:detail' rubric_pk=b.bb.rubric.pk pk=b.bb.pk %}">
+                            <span class="h5 mt-0" style="padding-right: 24px">{{ b.bb.title }}</span>
+                        </a>
+                            <button class="btn-link" style="border:none;" type="button">
+                                <i class="far fa-heart text-right" style="color:#009cf0;"></i>
+                            </button>
+                    </div>
+                    <span>
+                        {{ b.bb.price }}
+                        <span style="font-size: 90%; font-family: 'Arial Rub',Arial,
+                                    'Helvetica Neue',Helvetica,sans-serif; line-height: 1;">
+                            ₽
+                        </span>
+                </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

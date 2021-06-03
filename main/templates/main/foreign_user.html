@@ -1,0 +1,60 @@
+{% extends 'layout/basic3.html' %}
+{% load thumbnail %}
+{% load static %}
+{% load bootstrap4 %}
+
+{% block title %}Профиль пользователя {{ fuser.firstname }} {{ fuser.lastname }}{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-2"></div>
+    <div class="col-2">
+        <img class="rounded-circle z-depth-0"
+             src="{% static 'main/empty.jpg' %}" height="102" width="102" />
+        {% if user.first_name and user.last_name %}
+        <p class="h4 font-weight-bold mt-3">{{ user.first_name }}</p>
+        {% endif %}
+        <hr />
+        <a href="#" class="btn btn-primary btn-sm">Добавить отзыв</a>
+        <br /><br />
+        <p>Частное лицо</p>
+        <p>Зарегистрирован {{ fuser.date_joined }}</p>
+        <button type="submit" name="fuser_id" value="{{ fuser.id }}"
+                class="btn btn-light border btn-sm mb-3 align-middle">
+            <i class="far fa-heart" style="color:#009cf0;"></i>
+            Подписаться
+        </button>
+    </div>
+    <div class="col-6">
+        <h4 class="font-weight-bold mt-4">Объявления</h4>
+        <ul class="list-unstyled">
+            <div class="row">
+                {% for bb in bbs %}
+                {% url 'main:detail' rubric_pk=rubric.pk pk=bb.pk as url %}
+                <div class="card" style="width: 13rem; margin: 4px; height: 16rem; border:hidden">
+                    <a href="{% url 'main:detail' rubric_pk=bb.rubric.pk pk=bb.pk %}">
+                        {% if bb.image %}
+                        <img class="card-img-top border" src="{% thumbnail bb.image 'default' %}"
+                             alt="Card image cap">
+                        {% else %}
+                        <img class="card-img-top" style="width: 206px; height: 155px"
+                             src="{% static 'main/empty.jpg' %}">
+                        {% endif %}
+                        <p class="h6" style="margin-top: 5px; margin-bottom: 4px">
+                           {{ bb.title }}</p>
+                    </a>
+                    <div>
+                        <p style="margin: 0;" class="font-weight-bold">
+                            {{ bb.price }}
+                            <span style="font-size: 90%; font-family: 'Arial Rub',Arial,
+                                'Helvetica Neue',Helvetica,sans-serif; line-height: 1;">₽</span>
+                        </p>
+                        <p class="text-muted">{{ bb.created_at }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </ul>
+    </div>
+    <div class="col-3"></div>
+</div>
+{% endblock %}

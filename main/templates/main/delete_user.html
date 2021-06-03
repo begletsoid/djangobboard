@@ -1,13 +1,18 @@
-﻿{% extends 'layout/basic.html' %}
+{% extends 'layout/profile.html' %}
 
 {% load bootstrap4 %}
 
 {% block title %}Удаление пользователя{% endblock %}
 
-{% block content %}
-<h2>Удаление пользователя {{ object.username }}</h2>
-<form method="post">
-    {% csrf_token %}
-    {% buttons submit='Удалить' %}{% endbuttons %}
-</form>
-{% endblock %}
+{% block profile_content %}
+<div class="container mt-5">
+    <h2>Удаление пользователя {{ object.username }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="d-flex justify-content-start">
+            <a href="{% url 'main:profile_change' %}" class="btn mr-3 border border-dark" style="height: 38px;">Назад</a>
+            {% buttons submit='Удалить' %} {% endbuttons %}
+        </div>
+    </form>
+</div>
+    {% endblock %}

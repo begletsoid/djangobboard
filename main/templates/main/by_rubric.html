@@ -1,4 +1,4 @@
-﻿{% extends 'layout/basic.html' %}
+{% extends 'layout/basic2.html' %}
 
 
 {% load thumbnail %}
@@ -25,7 +25,7 @@
         {% url 'main:detail' rubric_pk=rubric.pk pk=bb.pk as url %}
         <a href="{{ url }}{{ all }}">
         {% if bb.image %}
-        <img class="mr-3" scr="{% thumbnail bb.image 'default' %}">
+        <img class="mr-3" src="{% thumbnail bb.image 'default' %}">
         {% else %}
         <img class="mr-3" src="{% static 'main/empty.jpg' %}">
         {% endif %} 

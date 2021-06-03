@@ -1,3 +1,35 @@
+carimg {
+    object-fit: cover;
+    width: 100%;
+    height: 400px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    font-family: 'Exo', sans-serif;
+    color: black;
+}
+
+.header {
+    width: 100%;
+    height: 815px;
+    background-image: url("http://via.placeholder.com/700x350");
+    background-size: cover;
+    background-position: center;
+    text-align: center;
+    overflow: hidden;
+}
+
+mymedia-body {
+    padding: 3px;
+}
+
 header h1 {
     background: url("bg.jpg") left / auto 100% no-repeat, url("bg.jpg") right / auto 100% no-repeat;
 }
@@ -10,5 +42,6 @@ img.main-image {
     width: 300px;
 }
 img.additional-image {
-    width: 180px;
+    width: 100px;
+    margin: 4px;
 }

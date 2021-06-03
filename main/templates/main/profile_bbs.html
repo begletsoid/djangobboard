@@ -1,0 +1,67 @@
+{% extends 'layout/profile.html' %}
+{% load thumbnail %}
+{% load static %}
+{% load bootstrap4 %}
+
+{% block title %}Профиль пользователя{% endblock %}
+{% block profile_content %}
+        <h3 class="font-weight-bold mt-4">Ваши объявления</h3>
+        <ul class="list-unstyled">
+            {% for bb in bbs %}
+            <li class="media my-2 p-3">
+                {% url 'main:profile_bb_detail' pk=bb.pk as url %}
+                <a href="{{ url }}">
+                    {% if bb.image %}
+                    <img class="mr-3 rounded border" src="{% thumbnail bb.image 'default' %}">
+                    {% else %}
+                    <img class="mr-3" src="{% static 'main/empty.jpg' %}">
+                    {% endif %}
+                </a>
+                <div class="media-body">
+                    <span class="h5">
+                        <a href="{{ url }}">
+                            {{ bb.title }}
+                        </a>
+                    </span>
+                    <br />
+                    <span class="font-weight-bold">{{ bb.price }} руб.</span>
+                    <p class="text-right mt-2">
+                    </p>
+                </div>
+                <div class="media-body">
+                    <div class="row">
+                        <div class="col-4">
+                            <span class="">
+                                <i class="far fa-eye" style="color: rgb(194,194,194);">
+                                </i> {{ bb.views }}
+                            </span>
+                            <br />
+                            <span>
+                                <i class="fas fa-heart" style="color: rgb(194,194,194); width:18px;"></i>
+                                {{ bb.total_likes }}
+                            </span>
+                        </div>
+                        <div class="col-2">
+                            <div class="dropdown">
+                                <button class="btn-link" style="border:none;" type="button"
+                                        id="dropdownMenuButton" data-toggle="dropdown"
+                                        aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-h" style="color: rgb(194,194,194);"></i>
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item"
+                                       href="{% url 'main:profile_bb_change' pk=bb.pk %}">
+                                    Редактировать</a>
+                                    <a class="dropdown-item"
+                                       href="{% url 'main:profile_bb_delete' pk=bb.pk %}">
+                                    Снять с публикации</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+{% endblock %}

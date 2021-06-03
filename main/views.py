@@ -1,5 +1,5 @@
-from django.shortcuts import render
-from django.http import HttpResponse, Http404
+from django.shortcuts import render, reverse
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 from django.contrib import messages
@@ -7,8 +7,9 @@ from django.contrib.auth import logout
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.decorators.cache import never_cache
 from django.views.generic.edit import UpdateView, CreateView, DeleteView
-from django.views.generic.base import TemplateView
+from django.views.generic.base import TemplateView, ContextMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404, redirect
@@ -16,17 +17,46 @@ from django.core.signing import BadSignature
 from django.core.paginator import Paginator
 from django.db.models import Q
 from .utilities import signer
-from .models import SubRubric, Bb
+from .models import SubRubric, Bb, PageHit
 from .forms import SearchForm, BbForm, AIFormSet
+from .decorators import counted
 
-from .models import AdvUser, Comment
+from .models import AdvUser, Comment, RecentBbs
 from .forms import ChangeUserInfoForm, RegisterUserForm, UserCommentForm, GuestCommentForm
 
 
-def index(request):
+def polygon(request):
+    if request.method == 'POST':
+        sf = SearchForm(request.POST)
+        if sf.is_valid():
+            keyword = sf.cleaned_data['keyword']
+            rubric_id = sf.cleaned_data['rubric'].pk
+            bbs = Bb.objects.filter(title__icontains=keyword,
+                                    rubric=rubric_id)
+            context = {'form':sf, 'bbs':bbs}
+            return render(request, 'layout/basic.html', context)
+    else:
+        sf = SearchForm()
     bbs = Bb.objects.order_by('-created_at')[:10]
-    context = {'bbs':bbs}
-    return render(request, 'main/index.html', context)
+    context = {'form':sf, 'bbs':bbs}
+    return render(request, 'layout/basic.html', context)
+
+def index(request):
+    if request.method == 'POST':
+        sf = SearchForm(request.POST)
+        if sf.is_valid():
+            keyword = sf.cleaned_data['keyword']
+            rubric_id = sf.cleaned_data['rubric'].pk
+            bbs = Bb.objects.filter(title__icontains=keyword,
+                                    rubric=rubric_id)
+            context = {'form':sf, 'bbs':bbs}
+            return render(request, 'main/index3.html', context)
+    else:
+        sf = SearchForm()
+    bbs = Bb.objects.order_by('-created_at')[:20]
+    context = {'form':sf, 'bbs':bbs}
+    return render(request, 'main/index3.html', context)
+
 
 def other_page(request, page):
     try:
@@ -43,12 +73,21 @@ class BBLoginView(LoginView):
 def profile(request):
     bbs = Bb.objects.filter(author=request.user.pk)
     context = {'bbs':bbs}
-    return render(request, 'main/profile.html', context)
+    return render(request, 'main/profile_bbs.html', context)
+
+@login_required
+def profile_liked(request):
+    bbs = Bb.objects.filter(likes=request.user.pk)
+    context = {'bbs':bbs}
+    return render(request, 'main/profile_liked.html', context)
 
 
-class BBLogoutView(LoginRequiredMixin, LogoutView):
-    template_name = 'main/logout.html'
-
+class BBLogoutView(SuccessMessageMixin, LoginRequiredMixin, LogoutView, ContextMixin):
+    template_name = 'main/index3.html'
+    success_message = 'Вы успешно вышли из аккаунта'
+    sf = SearchForm()
+    bbs = Bb.objects.order_by('-created_at')[:20]
+    extra_context = {'form':sf, 'bbs':bbs}
 
 class ChangeUserInfoView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     model = AdvUser
@@ -72,11 +111,12 @@ class BBPasswordChangeView(SuccessMessageMixin, LoginRequiredMixin, PasswordChan
     success_message = 'Пароль пользователя изменён'
 
 
-class RegisterUserView(CreateView):
+class RegisterUserView(SuccessMessageMixin, CreateView):
     model = AdvUser
     template_name = 'main/register_user.html'
     form_class = RegisterUserForm
-    success_url = reverse_lazy('main:register_done')
+    success_url = reverse_lazy('main:login')
+    success_message = 'Пользователь зарегистрирован'
 
 class RegisterDoneView(TemplateView):
     template_name = 'main/register_done.html'
@@ -137,36 +177,72 @@ def by_rubric(request, pk):
                'form':form}
     return render(request, 'main/by_rubric.html', context)
 
+def save_recent_bb(user, bb):
+    if not user.is_authenticated:
+        pass
+    else:
+        recent = user.recentbbs_set.all().order_by('attended_at')
+        for b in recent:
+            if b.bb == bb:
+                return None
+        if len(recent) < 3:
+            RecentBbs.objects.create(user=user, bb=bb)
+        else:
+            recent[0].delete()
+            RecentBbs.objects.create(user=user, bb=bb)
+
+@counted
 def detail(request, rubric_pk, pk):
     bb = get_object_or_404(Bb, pk=pk)
+    save_recent_bb(user=request.user, bb=bb)
     ais = bb.additionalimage_set.all()
-    comments = Comment.objects.filter(bb = pk, is_active=True)
-    initial = {'bb':bb.pk}
-    if request.user.is_authenticated:
-        initial['author'] = request.user.username
-        form_class = UserCommentForm
-    else:
-        form_class = GuestCommentForm
-    form = form_class(initial=initial)
     if request.method == 'POST':
-        c_form = form_class(request.POST)
-        if c_form.is_valid():
-            c_form.save()
-            messages.add_message(request, messages.SUCCESS,
-                                 'Комментарий добавлен')
-        else:
-            form = c_form
-            messages.add_message(request, messages.WARNING,
-                                 'Комментарий не добавлен')
-    context = {'bb':bb, 'ais':ais, 'comments':comments, 'form':form}
-    return render(request, 'main/detail.html', context)
+        sf = SearchForm(request.POST)
+        if sf.is_valid():
+            keyword = sf.cleaned_data['keyword']
+            rubric_id = sf.cleaned_data['rubric'].pk
+            bbs = Bb.objects.filter(title__icontains=keyword,
+                                    rubric=rubric_id)
+            context = {'form':sf, 'bbs':bbs}
+            return render(request, 'main/index2.html', context)
+    else:
+        bb.views += 1
+        bb.save()
+        bbs = Bb.objects.filter(title__icontains=bb.title[0], rubric=bb.rubric).exclude(pk=bb.pk)[:9]
+        sf = SearchForm()
+        liked = False
+        if bb.likes.filter(id=request.user.id).exists():
+            liked = True
+        count_views = PageHit.objects.get(url=request.path).count
+        context = {'liked':liked, 'bb':bb, 'ais':ais, 'form':sf, 'bbs':bbs, 'count_views':count_views}
+        return render(request, 'main/detail.html', context)
 
 @login_required
 def profile_bb_detail(request, pk):
     bb = get_object_or_404(Bb, pk=pk)
+    if bb.author != request.user:
+        raise Http404
+    save_recent_bb(user=request.user, bb=bb)
     ais = bb.additionalimage_set.all()
-    context = {'bb':bb, 'ais':ais}
-    return render(request, 'main/profile_bb_detail.html', context)
+    if request.method == 'POST':
+        sf = SearchForm(request.POST)
+        if sf.is_valid():
+            keyword = sf.cleaned_data['keyword']
+            rubric_id = sf.cleaned_data['rubric'].pk
+            bbs = Bb.objects.filter(title__icontains=keyword,
+                                    rubric=rubric_id)
+            context = {'form':sf, 'bbs':bbs}
+            return render(request, 'main/index2.html', context)
+    else:
+        bb.views += 1
+        bb.save()
+        bbs = Bb.objects.filter(title__icontains=bb.title[0], rubric=bb.rubric)[:9]
+        sf = SearchForm()
+        liked = False
+        if bb.likes.filter(id=request.user.id).exists():
+            liked = True
+        context = {'liked':liked, 'bb':bb, 'ais':ais, 'form':sf, 'bbs':bbs}
+        return render(request, 'main/detail.html', context)
 
 @login_required
 def profile_bb_add(request):
@@ -180,6 +256,8 @@ def profile_bb_add(request):
                 messages.add_message(request, messages.SUCCESS,
                                      'Объявление добавлено')
                 return redirect('main:profile')
+        else:
+            formset = AIFormSet()
     else:
         form = BbForm(initial={'author':request.user.pk})
         formset = AIFormSet()
@@ -216,3 +294,22 @@ def profile_bb_delete(request, pk):
     else:
         context = {'bb':bb}
         return render(request, 'main/profile_bb_delete.html', context)
+
+@login_required
+def LikeView(request, pk):
+    bb = get_object_or_404(Bb, id=request.POST.get('bb_id'))
+    liked = False
+    if bb.likes.filter(id=request.user.id).exists():
+        bb.likes.remove(request.user)
+        liked = False
+    else:
+        bb.likes.add(request.user)
+        liked = True
+    return HttpResponseRedirect(reverse('main:detail', kwargs={'rubric_pk':bb.rubric.pk, 'pk':str(pk)}))
+
+
+def foreign_user(request, pk):
+    foreignuser = get_object_or_404(AdvUser, pk=pk)
+    bbs = Bb.objects.filter(author=foreignuser)
+    context = {'fuser':foreignuser, 'bbs':bbs}
+    return render(request, 'main/foreign_user.html', context)

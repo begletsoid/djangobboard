@@ -1,0 +1,37 @@
+{% extends 'layout/basic2.html' %}
+{% load thumbnail %}
+{% load static %}
+{% load bootstrap4 %}
+{% load crispy_forms_tags %}
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<h2 style="margin-left: 255px">Рекоммендации для вас</h2>
+<div class="container" style="width: 60rem; margin-left: 255px">
+    <div class="row">
+        {% for bb in bbs %}
+        {% url 'main:detail' rubric_pk=rubric.pk pk=bb.pk as url %}
+        <div class="card" style="width: 13rem; margin: 4px; height: 16rem; border:hidden">
+            <a href="{% url 'main:detail' rubric_pk=bb.rubric.pk pk=bb.pk %}">
+                {% if bb.image %}
+                <img class="card-img-top" src="{% thumbnail bb.image 'default' %}"
+                     alt="Card image cap">
+                {% else %}
+                <img class="card-img-top" style="width: 206px; height: 155px"
+                     src="{% static 'main/empty.jpg' %}">
+                {% endif %}
+                <p class="h6" style="margin-top: 5px; margin-bottom: 4px">{{ bb.title }}</p>
+            </a>
+            <div>
+                <p style="margin: 0;" class="font-weight-bold">
+                    {{ bb.price }}
+                    <span style="font-size: 90%; font-family: 'Arial Rub',Arial,
+                    'Helvetica Neue',Helvetica,sans-serif; line-height: 1;">₽</span>
+                </p>
+                <p class="text-muted">{{ bb.created_at }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

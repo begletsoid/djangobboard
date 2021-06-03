@@ -5,6 +5,7 @@ from django.forms import inlineformset_factory
 from .apps import user_registered
 from .models import AdvUser, SuperRubric, SubRubric, Bb, AdditionalImage, Comment
 from captcha.fields import CaptchaField
+from phonenumber_field.formfields import PhoneNumberField
 
 
 class ChangeUserInfoForm(forms.ModelForm):
@@ -69,17 +70,23 @@ class SubRubricForm(forms.ModelForm):
         model = SubRubric
         fields = '__all__'
 
-class SearchForm(forms.Form):
-    keyword = forms.CharField(required=False, max_length=20, label='')
 
+class SearchForm(forms.Form):
+    rubric = forms.ModelChoiceField(queryset=SubRubric.objects.all(), empty_label='-', label='')
+    keyword = forms.CharField(required=False, max_length=20, label='')
+    class Meta:
+        widgets = {'keyword': forms.TextInput(attrs={'class': 'form-control'}),
+                   'rubric': forms.Select(attrs={'class': 'form-control'})
+        }
 
 class BbForm(forms.ModelForm):
     class Meta:
-        model =Bb
-        fields = '__all__'
+        model = Bb
+        fields = ('rubric', 'title', 'content', 'author',
+                  'price', 'contacts', 'image', 'phone_number')
         widgets = {'author': forms.HiddenInput}
 
-AIFormSet = inlineformset_factory(Bb, AdditionalImage, fields = '__all__')
+AIFormSet = inlineformset_factory(Bb, AdditionalImage, fields = ('image',), extra = 3)
 
 
 class UserCommentForm(forms.ModelForm):

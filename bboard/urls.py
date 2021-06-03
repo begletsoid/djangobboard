@@ -11,10 +11,9 @@ urlpatterns = [
     path('captcha/', include('captcha.urls')),
     path('api/', include('api.urls')),
     path('', include('main.urls')),
-
 ]
 
 if settings.DEBUG:
-    urlpatterns.append(path('static/<path:path>', never_cache(serve)))
+    urlpatterns.append( path('static/<path:path>', never_cache(serve)))
     urlpatterns += static(settings.MEDIA_URL,
                           document_root=settings.MEDIA_ROOT)

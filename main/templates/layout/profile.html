@@ -1,0 +1,39 @@
+﻿{% extends 'layout/basic3.html' %}
+{% load crispy_forms_tags %}
+{% load thumbnail %}
+{% load static %}
+{% load bootstrap4 %}
+
+{% block title %}Профиль пользователя{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-2"></div>
+    <div class="col-2">
+        {% bootstrap_messages %}
+        <img class="rounded-circle z-depth-0"
+             src="{% static 'main/empty.jpg' %}" height="102" width="102" />
+        {% if user.first_name and user.last_name %}
+        <p class="h4 font-weight-bold mt-3">{{ user.first_name }} {{user.last_name}}</p>
+        {% endif %}
+        {% if user.email %}
+        <span style="color: rgba(0,0,0,0.4);">{{ user.email }}</span>
+        {% endif %}
+        <hr />
+        <p class="font-weight-bold">
+            <a href="{% url 'main:profile' %}">Мои объявления</a>
+        </p>
+        <p class="font-weight-bold"><a href="#">Мои отзывы</a></p>
+        <p class="font-weight-bold">
+            <a href="{% url 'main:profile_liked' %}">Избранное</a>
+        </p>
+        <p class="font-weight-bold"><a href="#">Сообщения</a></p>
+        <p class="font-weight-bold"><a href="{% url 'main:profile_change' %}">Настройки</a></p>
+    </div>
+    <div class="col-5">
+        {% block profile_content %}
+        {% endblock %}
+    </div>
+    <div class="col-3"></div>
+</div>
+{% endblock %}

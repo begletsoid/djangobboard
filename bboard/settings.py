@@ -35,7 +35,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'api.apps.ApiConfig',
+    'crispy_forms',
+    'phonenumber_field',
 ]
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -107,11 +111,17 @@ MEDIA_URL = '/media/'
 THUMBNAIL_ALIASES = {
     '': {
         'default': {
-            'size': (96, 96),
-            'crop': 'scale',
+            'size': (208, 156),
+            'crop': 'smart',
+        },
+        'detail': {
+            'size': (600, 500),
+            'crop': 'smart',
+        },
+        'recent': {
+            'size': (100, 75),
+            'crop': 'smart',
         },
     },
 }
 THUMBNAIL_BASEDIR = 'thumbnails'
-
-THUMBNAIL_DEBUG = True
