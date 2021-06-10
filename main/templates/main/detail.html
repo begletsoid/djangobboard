@@ -1,9 +1,8 @@
 {% extends 'layout/basic2.html' %}
 {% load crispy_forms_tags %}
 {% load bootstrap4 %}
-{% load static %}
 {% load thumbnail %}
-
+{% load static %}
 {% block title %}{{ bb.titile }} - {{ bb.rubric.name }}{% endblock %}
 
 {% block content %}
@@ -31,23 +30,20 @@
         <div class="col-5">
             <h2>{{ bb.title }}</h2>
             <div class="d-flex align-items-start">
-                <form action="{% url 'main:like_bb' bb.pk %}"
-                      method="POST">
-                    {% csrf_token %}
-                    {% if liked %}
-                    <button type="submit" name="bb_id" value="{{ bb.id }}"
-                            class="btn btn-light border btn-sm mb-3 align-middle">
-                        <i class="fas fa-heart" style="color:#009cf0;"></i>
-                        В избранном
-                    </button>
-                    {% else %}
-                    <button type="submit" name="bb_id" value="{{ bb.id }}"
-                            class="btn btn-light border btn-sm mb-3 align-middle">
-                        <i class="far fa-heart" style="color:#009cf0;"></i>
-                        Добавить в избранное
-                    </button>
-                    {% endif %}
-                </form>
+                {% csrf_token %}
+                {% if liked %}
+                <button name="bb_id" id="like-button" value="{{ bb.id }}"
+                        class="btn btn-light border btn-sm mb-3 align-middle like-button">
+                    <i class="fas fa-heart" style="color:#009cf0;"></i>
+                    В избранном
+                </button>
+                {% else %}
+                <button name="bb_id" id="like-button" value="{{ bb.id }}"
+                        class="btn btn-light border btn-sm mb-3 align-middle like-button">
+                    <i class="far fa-heart" style="color:#009cf0;"></i>
+                    Добавить в избранное
+                </button>
+                {% endif %}
                 <span class="ml-2" style="margin-top: 4px">
                     {{ bb.created_at }}
                 </span>
@@ -126,7 +122,7 @@
                         <p style="margin: 0;" class="font-weight-bold">
                             {{ bb.price }}
                             <span style="font-size: 90%; font-family: 'Arial Rub',Arial,
-                    'Helvetica Neue',Helvetica,sans-serif; line-height: 1;">₽</span>
+                        'Helvetica Neue',Helvetica,sans-serif; line-height: 1;">₽</span>
                         </p>
                         <p class="text-muted">{{ bb.created_at }}</p>
                     </div>
@@ -146,8 +142,11 @@
                     style="width: 310px; height: 66px;">
                 Написать сообщение
             </button>
-            <p class="mb-1"><a href="{% url 'main:foreign_user' bb.author.pk %}">
-                {{ bb.author.first_name }} {{ bb.author.last_name }}</a></p>
+            <p class="mb-1">
+                <a href="{% url 'main:foreign_user' bb.author.pk %}">
+                    {{ bb.author.first_name }} {{ bb.author.last_name }}
+                </a>
+            </p>
             <p>Частное лицо</p>
             <hr />
             <i class="far fa-eye" style="color: gray;"></i>
@@ -160,4 +159,32 @@
         Назад
     </a>
 </p>-->
+{% block js %}
+<!--<script type="text/javascript" src={% static "main/detail.js" %}></script>-->
+<script>
+    {% if liked %}
+    document.getElementById("like-button").innerHTML = '<i class="fas fa-heart" style="color:#009cf0;"></i>\nВ избранном'
+    {% else %}
+    document.getElementById("like-button").innerHTML = '<i class="far fa-heart" style="color:#009cf0;"></i>\nДобавить в избранное'
+    {% endif %}
+</script>
+<script>
+    $(document).on('click', '#like-button', function (e) {
+        console.log($('#like-button').val())
+        e.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'main:like_bb' %}",
+            data: {
+                bb_id: $('#like-button').val(),
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                action: 'post'
+            },
+            success: function (json) {
+                document.getElementById("like-button").innerHTML = json['result']
+            }
+
+        })
+    });
+                {% endblock %}
 {% endblock %}

@@ -79,9 +79,10 @@ class Bb(models.Model):
                                   verbose_name = 'Опубликовано')
     views = models.IntegerField(default = 0, verbose_name = 'Просмотры')
     likes = models.ManyToManyField(AdvUser, related_name='bb_post')
+    likes_count = models.BigIntegerField(default='0')
 
-    def total_likes(self):
-        return self.likes.count()
+    #def total_likes(self):
+       # return self.likes.count()
 
     def delete(self, *args, **kwargs):
         for ai in self.additionalimage_set.all():

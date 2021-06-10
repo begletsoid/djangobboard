@@ -1,5 +1,5 @@
 from django.shortcuts import render, reverse
-from django.http import HttpResponse, Http404, HttpResponseRedirect
+from django.http import HttpResponse, Http404, HttpResponseRedirect, JsonResponse
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 from django.contrib import messages
@@ -295,18 +295,23 @@ def profile_bb_delete(request, pk):
         context = {'bb':bb}
         return render(request, 'main/profile_bb_delete.html', context)
 
-@login_required
-def LikeView(request, pk):
-    bb = get_object_or_404(Bb, id=request.POST.get('bb_id'))
-    liked = False
-    if bb.likes.filter(id=request.user.id).exists():
-        bb.likes.remove(request.user)
-        liked = False
-    else:
-        bb.likes.add(request.user)
-        liked = True
-    return HttpResponseRedirect(reverse('main:detail', kwargs={'rubric_pk':bb.rubric.pk, 'pk':str(pk)}))
 
+@login_required
+def LikeView(request):
+    if request.POST.get('action') == 'post':
+        result = ''
+        id = int(request.POST.get('bb_id'))
+        bb = get_object_or_404(Bb, id=id)
+        if bb.likes.filter(id=request.user.id).exists():
+            bb.likes.remove(request.user)
+            bb.likes_count -= 1
+            result = '<i class="far fa-heart" style="color:#009cf0;"></i>\nДобавить в избранное'
+        else:
+            bb.likes.add(request.user)
+            bb.likes_count += 1
+            result = '<i class="fas fa-heart" style="color:#009cf0;"></i>\nВ избранном'
+        bb.save()
+        return JsonResponse({'result': result, })
 
 def foreign_user(request, pk):
     foreignuser = get_object_or_404(AdvUser, pk=pk)
