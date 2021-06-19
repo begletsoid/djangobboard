@@ -21,14 +21,14 @@
         {% endif %}
         <hr />
         <p class="font-weight-bold">
-            <a href="{% url 'main:profile' %}">Мои объявления</a>
+            <a class="redlink" href="{% url 'main:profile' %}">Мои объявления</a>
         </p>
-        <p class="font-weight-bold"><a href="#">Мои отзывы</a></p>
+        <p class="font-weight-bold"><a class="redlink" href="#">Мои отзывы</a></p>
         <p class="font-weight-bold">
-            <a href="{% url 'main:profile_liked' %}">Избранное</a>
+            <a class="redlink" href="{% url 'main:profile_liked' %}">Избранное</a>
         </p>
-        <p class="font-weight-bold"><a href="#">Сообщения</a></p>
-        <p class="font-weight-bold"><a href="{% url 'main:profile_change' %}">Настройки</a></p>
+        <p class="font-weight-bold"><a class="redlink" href="#">Сообщения</a></p>
+        <p class="font-weight-bold"><a class="redlink" href="{% url 'main:profile_change' %}">Настройки</a></p>
     </div>
     <div class="col-5">
         {% block profile_content %}

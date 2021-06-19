@@ -45,3 +45,8 @@ img.additional-image {
     width: 100px;
     margin: 4px;
 }
+
+a.redlink:hover {
+    color: rgb(255,97,99) !important;
+    text-decoration: none !important;
+}

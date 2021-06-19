@@ -14,7 +14,7 @@
             {% for bb in bbs %}
             {% url 'main:detail' rubric_pk=rubric.pk pk=bb.pk as url %}
             <div class="card" style="width: 13rem; margin: 4px; height: 16rem; border:hidden">
-                <a href="{% url 'main:detail' rubric_pk=bb.rubric.pk pk=bb.pk %}">
+                <a class="redlink" href="{% url 'main:detail' rubric_pk=bb.rubric.pk pk=bb.pk %}">
                     {% if bb.image %}
                     <img class="card-img-top border" src="{% thumbnail bb.image 'default' %}"
                          alt="Card image cap">
@@ -41,27 +41,29 @@
         {% if user.recentbbs_set.all %}
         <h5>Вы смотрели</h5>
         {% for b in user.recentbbs_set.all %}
-        <div class="media mt-3">
-            <a href="{% url 'main:detail' rubric_pk=b.bb.rubric.pk pk=b.bb.pk %}">
-                <img class="mr-3" src="{% thumbnail b.bb.image 'recent' %}"
-                     alt="Generic placeholder image">
-            </a>
+        <div class="row">
+            <div class="media position-relative mt-3 col-7" style="padding-right: 0px !important;">
+                <img class="mr-3" src="{% thumbnail b.bb.image 'recent' %}" />
                 <div class="media-body">
                     <div class="d-flex">
-                        <a href="{% url 'main:detail' rubric_pk=b.bb.rubric.pk pk=b.bb.pk %}">
-                            <span class="h5 mt-0" style="padding-right: 24px">{{ b.bb.title }}</span>
+                        <a class="redlink stretched-link" href="{% url 'main:detail' rubric_pk=b.bb.rubric.pk pk=b.bb.pk %}">
+                            <span class="h6 mt-0" style="padding-right: 24px">{{ b.bb.title }}</span>
                         </a>
-                            <button class="btn-link" style="border:none;" type="button">
-                                <i class="far fa-heart text-right" style="color:#009cf0;"></i>
-                            </button>
-                    </div>
+                        </div>
                     <span>
                         {{ b.bb.price }}
                         <span style="font-size: 90%; font-family: 'Arial Rub',Arial,
-                                    'Helvetica Neue',Helvetica,sans-serif; line-height: 1;">
+                                        'Helvetica Neue',Helvetica,sans-serif; line-height: 1;">
                             ₽
                         </span>
+                    </span>
                 </div>
+            </div>
+            <div class="col-2" style="padding-left: 0px !important;">
+                <button class="btn-link mt-3" style="border:none;" type="button">
+                    <i class="far fa-heart text-right" style="color:#009cf0;"></i>
+                </button>
+            </div>
         </div>
         {% endfor %}
         {% endif %}

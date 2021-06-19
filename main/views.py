@@ -34,12 +34,12 @@ def polygon(request):
             bbs = Bb.objects.filter(title__icontains=keyword,
                                     rubric=rubric_id)
             context = {'form':sf, 'bbs':bbs}
-            return render(request, 'layout/basic.html', context)
+            return render(request, 'layout/trash.html', context)
     else:
         sf = SearchForm()
     bbs = Bb.objects.order_by('-created_at')[:10]
     context = {'form':sf, 'bbs':bbs}
-    return render(request, 'layout/basic.html', context)
+    return render(request, 'layout/trash.html', context)
 
 def index(request):
     if request.method == 'POST':

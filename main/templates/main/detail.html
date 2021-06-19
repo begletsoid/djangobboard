@@ -106,7 +106,7 @@
                 {% url 'main:detail' rubric_pk=rubric.pk pk=bb.pk as url %}
                 <div class="card"
                      style="width: 13rem; margin: 4px; height: 16rem; border:hidden">
-                    <a href="{% url 'main:detail' rubric_pk=bb.rubric.pk pk=bb.pk %}">
+                    <a class="redlink" href="{% url 'main:detail' rubric_pk=bb.rubric.pk pk=bb.pk %}">
                         {% if bb.image %}
                         <img class="card-img-top" src="{% thumbnail bb.image 'default' %}"
                              alt="Card image cap">
@@ -143,7 +143,7 @@
                 Написать сообщение
             </button>
             <p class="mb-1">
-                <a href="{% url 'main:foreign_user' bb.author.pk %}">
+                <a  class="redlink" href="{% url 'main:foreign_user' bb.author.pk %}">
                     {{ bb.author.first_name }} {{ bb.author.last_name }}
                 </a>
             </p>
@@ -154,11 +154,6 @@
         </div>
     </div>
 </div>
-<!--<p>
-    <a href="{% url 'main:by_rubric' pk=bb.rubric.pk %}{{ all }}">
-        Назад
-    </a>
-</p>-->
 {% block js %}
 <!--<script type="text/javascript" src={% static "main/detail.js" %}></script>-->
 <script>
@@ -186,5 +181,6 @@
 
         })
     });
+</script>
                 {% endblock %}
 {% endblock %}

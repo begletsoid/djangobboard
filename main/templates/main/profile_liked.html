@@ -8,7 +8,7 @@
 <h3 class="font-weight-bold mt-4">Избранное</h3>
 <ul class="list-unstyled">
     {% for bb in bbs %}
-    <li class="media my-2 p-3">
+    <li class="media my-2 p-3" id="{{ bb.id }}">
         {% url 'main:profile_bb_detail' pk=bb.pk as url %}
         <a href="{{ url }}">
             {% if bb.image %}
@@ -19,7 +19,7 @@
         </a>
         <div class="media-body">
             <span class="h5">
-                <a href="{{ url }}">
+                <a class="redlink" href="{{ url }}">
                     {{ bb.title }}
                 </a>
             </span>
@@ -38,10 +38,11 @@
                             <i class="fas fa-ellipsis-h" style="color: rgb(194,194,194);"></i>
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item"
+                            {% csrf_token %}
+                            <button class="dropdown-item" id="like-button" value="{{ bb.id }}"
                                href="#">
                                 <i class="far fa-trash-alt"></i> Удалить
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -52,3 +53,22 @@
     {% endfor %}
 </ul>
 {% endblock %}
+{% block js %}
+<script>$(document).on('click', '#like-button', function (e) {
+        console.log($('#like-button').val())
+        e.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'main:like_bb' %}",
+            data: {
+                bb_id: $('#like-button').val(),
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                action: 'post'
+            },
+            success: function (json) {
+                document.getElementById($('#like-button').val()).hidden = true;
+            }
+
+        })
+    });</script>
+{% endblock js %}
