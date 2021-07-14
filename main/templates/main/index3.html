@@ -9,7 +9,11 @@
 <div class="row">
     <div class="col-2"></div>
     <div class="col-6">
-        <div class="row"><span class="h3">Рекоммендации для вас</span></div>
+        {% if search_label %}
+        <div class="row"><span class="h3">{{ search_label }}</span></div>
+        {% else %}
+        <div class="row"><span class="h3">Рекомендации для вас</span></div>
+        {% endif %}
         <div class="row">
             {% for bb in bbs %}
             {% url 'main:detail' rubric_pk=rubric.pk pk=bb.pk as url %}

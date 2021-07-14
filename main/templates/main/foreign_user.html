@@ -17,7 +17,7 @@
         <a href="#" class="btn btn-primary btn-sm">Добавить отзыв</a>
         <br /><br />
         <p>Частное лицо</p>
-        <p>Зарегистрирован {{ fuser.date_joined }}</p>
+        <p>Зарегистрирован {{ fuser.date_joined|date:"d E Y" }}</p>
         <button type="submit" name="fuser_id" value="{{ fuser.id }}"
                 class="btn btn-light border btn-sm mb-3 align-middle">
             <i class="far fa-heart" style="color:#009cf0;"></i>

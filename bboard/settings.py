@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'crispy_forms',
     'phonenumber_field',
+    'channels',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -66,6 +67,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'main.middlewares.bboard_context_processor',
+                'main.middlewares.add_superrubrics',
             ],
         },
     },
@@ -128,3 +130,4 @@ THUMBNAIL_ALIASES = {
     },
 }
 THUMBNAIL_BASEDIR = 'thumbnails'
+ASGI_APPLICATION = "bboard.routing.application"

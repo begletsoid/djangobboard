@@ -388,6 +388,4 @@ Thumbs.db
 *.komodoproject
 
 # Folders to ignore
-/js/coverage/
-/node_modules/
-bboard/static/admin/
+bboard/static/

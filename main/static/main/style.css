@@ -50,3 +50,12 @@ a.redlink:hover {
     color: rgb(255,97,99) !important;
     text-decoration: none !important;
 }
+
+a.darkredlink:hover {
+    color: rgb(255,97,99) !important;
+    text-decoration: none !important;
+}
+a.darkredlink {
+    color: black !important;
+    text-decoration: none !important;
+}

@@ -53,6 +53,8 @@ class SubRubric(Rubric):
     objects = SubRubricManager()
 
     def __str__(self):
+        if self.name == 'Любая категория':
+            return 'Любая категория'
         return '%s - %s' % (self.super_rubric.name, self.name)
 
     class Meta:
@@ -81,8 +83,8 @@ class Bb(models.Model):
     likes = models.ManyToManyField(AdvUser, related_name='bb_post')
     likes_count = models.BigIntegerField(default='0')
 
-    #def total_likes(self):
-       # return self.likes.count()
+    def total_likes(self):
+       return self.likes.count()
 
     def delete(self, *args, **kwargs):
         for ai in self.additionalimage_set.all():

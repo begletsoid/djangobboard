@@ -7,6 +7,7 @@
 {% block profile_content %}
         <h3 class="font-weight-bold mt-4">Ваши объявления</h3>
         <ul class="list-unstyled">
+            {% if bbs %}
             {% for bb in bbs %}
             <li class="media my-2 p-3">
                 {% url 'main:profile_bb_detail' pk=bb.pk as url %}
@@ -51,17 +52,22 @@
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     <a class="dropdown-item"
                                        href="{% url 'main:profile_bb_change' pk=bb.pk %}">
-                                    Редактировать</a>
+                                        Редактировать
+                                    </a>
                                     <a class="dropdown-item"
                                        href="{% url 'main:profile_bb_delete' pk=bb.pk %}">
-                                    Снять с публикации</a>
+                                        Снять с публикации
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     </div>
-                        
+
                 </div>
             </li>
             {% endfor %}
+            {% else %}
+            <span style="color: rgba(0,0,0,0.4);">Вы ещё не добавляли объявлений</span>
+            {% endif %}
         </ul>
 {% endblock %}

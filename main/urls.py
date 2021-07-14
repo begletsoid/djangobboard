@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import other_page, BBLoginView, index, BBLogoutView, profile
 from .views import ChangeUserInfoView, BBPasswordChangeView, RegisterUserView
-from .views import RegisterDoneView, user_activate, DeleteUserView, by_rubric
+from .views import RegisterDoneView, user_activate, DeleteUserView, by_rubric, by_superrubric
 from .views import detail, profile_bb_detail, profile_bb_add
 from .views import profile_bb_change, profile_bb_delete, polygon, profile_liked
 from .views import LikeView, foreign_user
@@ -31,6 +31,7 @@ urlpatterns = [
     path('like_bb/', LikeView, name='like_bb'),
     path('<int:rubric_pk>/<int:pk>/', detail, name='detail'),
     path('<int:pk>/', by_rubric, name='by_rubric'),
+    path('super/<int:pk>', by_superrubric, name='by_superrubric'),
     path('<str:page>/', other_page, name='other' ),
     path('', index, name='index'),
 ]

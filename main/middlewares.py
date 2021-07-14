@@ -1,4 +1,6 @@
 from .models import SubRubric
+from .models import SuperRubric
+from .forms import SearchForm
 
 def bboard_context_processor(request):
     context = {}
@@ -18,3 +20,7 @@ def bboard_context_processor(request):
             else:
                 context['all'] = '?page' + page
     return context
+
+def add_superrubrics(request):
+    return {'superrubrics': SuperRubric.objects.all().exclude(name='Все'),
+            'form':SearchForm()}

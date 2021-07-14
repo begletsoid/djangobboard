@@ -3,10 +3,11 @@
 {% load static %}
 {% load bootstrap4 %}
 
-{% block title %}Профиль пользователя{% endblock %}
+{% block title %}Избранное{% endblock %}
 {% block profile_content %}
 <h3 class="font-weight-bold mt-4">Избранное</h3>
 <ul class="list-unstyled">
+    {% if bbs %}
     {% for bb in bbs %}
     <li class="media my-2 p-3" id="{{ bb.id }}">
         {% url 'main:profile_bb_detail' pk=bb.pk as url %}
@@ -51,22 +52,26 @@
         </div>
     </li>
     {% endfor %}
+    {% else %}
+    <span style="color: rgba(0,0,0,0.4);"> У вас пока нет избранных объявлений</span>
+    {% endif %}
 </ul>
 {% endblock %}
 {% block js %}
 <script>$(document).on('click', '#like-button', function (e) {
-        console.log($('#like-button').val())
+        num = $(this).val()
+        console.log(num)
         e.preventDefault();
         $.ajax({
             type: 'POST',
             url: "{% url 'main:like_bb' %}",
             data: {
-                bb_id: $('#like-button').val(),
+                bb_id: $(this).val(),
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
                 action: 'post'
             },
             success: function (json) {
-                document.getElementById($('#like-button').val()).hidden = true;
+                document.getElementById(num).hidden = true;
             }
 
         })

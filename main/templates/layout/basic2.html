@@ -101,6 +101,9 @@
                         <i class="fas fa-sign fa-3x"></i>
                     </a>
                 </div>
+                {% for sup in superrubrics %}
+                <a class="mt-4 ml-4 darkredlink" href="{% url 'main:by_superrubric' sup.pk %}">{{ sup.name }}</a>
+                {% endfor %}
             </div>
             <div class="row">
                 <div class="col-2 ml-5"></div>

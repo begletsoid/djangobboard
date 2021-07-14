@@ -17,11 +17,10 @@ from django.core.signing import BadSignature
 from django.core.paginator import Paginator
 from django.db.models import Q
 from .utilities import signer
-from .models import SubRubric, Bb, PageHit
 from .forms import SearchForm, BbForm, AIFormSet
 from .decorators import counted
 
-from .models import AdvUser, Comment, RecentBbs
+from .models import AdvUser, Comment, RecentBbs, SubRubric, SuperRubric, Bb, PageHit
 from .forms import ChangeUserInfoForm, RegisterUserForm, UserCommentForm, GuestCommentForm
 
 
@@ -46,10 +45,17 @@ def index(request):
         sf = SearchForm(request.POST)
         if sf.is_valid():
             keyword = sf.cleaned_data['keyword']
-            rubric_id = sf.cleaned_data['rubric'].pk
-            bbs = Bb.objects.filter(title__icontains=keyword,
-                                    rubric=rubric_id)
-            context = {'form':sf, 'bbs':bbs}
+            rubric = sf.cleaned_data['rubric']
+            rubric_id = rubric.pk
+            if rubric.name == 'Любая категория':
+                q = Q(title__icontains=keyword.capitalize()) | Q(title__icontains=(keyword[0].lower() + keyword[1:]))
+                bbs = Bb.objects.filter(q)
+            else:
+                 q = Q(title__icontains=keyword.capitalize()) | \
+                 Q(title__icontains=(keyword[0].lower() + keyword[1:]))
+                 bbs = Bb.objects.filter(q).filter(rubric=rubric_id)
+            search_label = 'Объявления по запросу \"%s\"' % keyword
+            context = {'form':sf, 'bbs':bbs, 'search_label':search_label}
             return render(request, 'main/index3.html', context)
     else:
         sf = SearchForm()
@@ -318,3 +324,9 @@ def foreign_user(request, pk):
     bbs = Bb.objects.filter(author=foreignuser)
     context = {'fuser':foreignuser, 'bbs':bbs}
     return render(request, 'main/foreign_user.html', context)
+
+def by_superrubric(request, pk):
+    rubric = get_object_or_404(SuperRubric, pk=pk)
+    bbs = Bb.objects.filter(is_active=True, rubric__super_rubric=pk)
+    context = {'rubric':rubric, 'bbs':bbs, 'search_label': rubric.name}
+    return render(request, 'main/index3.html', context)
