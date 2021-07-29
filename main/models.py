@@ -15,6 +15,9 @@ class AdvUser(AbstractUser):
             bb.delete()
         super().delete(*args, **kwargs)
 
+    def get_absolute_url(self):
+        return f'user/{self.id}'
+
     class Meta(AbstractUser.Meta):
         pass
 
@@ -25,7 +28,10 @@ class Rubric(models.Model):
     order = models.SmallIntegerField(default=0, db_index = True, verbose_name = 'Порядок')
     super_rubric = models.ForeignKey('SuperRubric', on_delete = models.PROTECT,
                                      null = True, blank = True, verbose_name = 'Надрубрика')
-
+    def get_absolute_url(self):
+        return f'{self.id}'
+    class Meta:
+        ordering = ['order', 'name']
 
 class SuperRubricManager(models.Manager):
     def get_queryset(self):

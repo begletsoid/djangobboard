@@ -73,7 +73,7 @@ class SubRubricForm(forms.ModelForm):
 
 class SearchForm(forms.Form):
     rubric = forms.ModelChoiceField(queryset=SubRubric.objects.all(), empty_label=None, label='')
-    keyword = forms.CharField(required=False, max_length=20, label='')
+    keyword = forms.CharField(required=True, max_length=20, label='')
     class Meta:
         widgets = {'keyword': forms.TextInput(attrs={'class': 'form-control'}),
                    'rubric': forms.Select(attrs={'class': 'form-control'})

@@ -49,11 +49,11 @@ def index(request):
             rubric_id = rubric.pk
             if rubric.name == 'Любая категория':
                 q = Q(title__icontains=keyword.capitalize()) | Q(title__icontains=(keyword[0].lower() + keyword[1:]))
-                bbs = Bb.objects.filter(q)
+                bbs = Bb.objects.filter(q).filter(is_active = True)
             else:
                  q = Q(title__icontains=keyword.capitalize()) | \
                  Q(title__icontains=(keyword[0].lower() + keyword[1:]))
-                 bbs = Bb.objects.filter(q).filter(rubric=rubric_id)
+                 bbs = Bb.objects.filter(q).filter(rubric=rubric_id).filter(is_active = True)
             search_label = 'Объявления по запросу \"%s\"' % keyword
             context = {'form':sf, 'bbs':bbs, 'search_label':search_label}
             return render(request, 'main/index3.html', context)
@@ -169,7 +169,7 @@ def by_rubric(request, pk):
     if 'keyword' in request.GET:
         keyword = request.GET['keyword']
         q = Q(title__icontains=keyword) | Q(content__icontains=keyword)
-        bbs = bbs.filter(q)
+        bbs = bbs.filter(q).filter(is_active = True)
     else:
         keyword = ''
     form = SearchForm(initial = {'keyword':keyword})
