@@ -56,12 +56,12 @@ def index(request):
                  bbs = Bb.objects.filter(q).filter(rubric=rubric_id).filter(is_active = True)
             search_label = 'Объявления по запросу \"%s\"' % keyword
             context = {'form':sf, 'bbs':bbs, 'search_label':search_label}
-            return render(request, 'main/index3.html', context)
+            return render(request, 'main/index.html', context)
     else:
         sf = SearchForm()
-    bbs = Bb.objects.order_by('-created_at')[:20]
+    bbs = Bb.objects.order_by('-created_at')
     context = {'form':sf, 'bbs':bbs}
-    return render(request, 'main/index3.html', context)
+    return render(request, 'main/index.html', context)
 
 
 def other_page(request, page):
@@ -89,7 +89,7 @@ def profile_liked(request):
 
 
 class BBLogoutView(SuccessMessageMixin, LoginRequiredMixin, LogoutView, ContextMixin):
-    template_name = 'main/index3.html'
+    template_name = 'main/index.html'
     success_message = 'Вы успешно вышли из аккаунта'
     sf = SearchForm()
     bbs = Bb.objects.order_by('-created_at')[:20]
@@ -164,24 +164,41 @@ class DeleteUserView(LoginRequiredMixin, DeleteView):
         return get_object_or_404(queryset, pk=self.user_id)
 
 def by_rubric(request, pk):
-    rubric = get_object_or_404(SubRubric, pk=pk)
-    bbs = Bb.objects.filter(is_active=True, rubric=pk)
-    if 'keyword' in request.GET:
-        keyword = request.GET['keyword']
-        q = Q(title__icontains=keyword) | Q(content__icontains=keyword)
-        bbs = bbs.filter(q).filter(is_active = True)
+    if request.method == 'POST':
+        sf = SearchForm(request.POST)
+        if sf.is_valid():
+            keyword = sf.cleaned_data['keyword']
+            rubric = sf.cleaned_data['rubric']
+            rubric_id = rubric.pk
+            if rubric.name == 'Любая категория':
+                q = Q(title__icontains=keyword.capitalize()) | Q(title__icontains=(keyword[0].lower() + keyword[1:]))
+                bbs = Bb.objects.filter(q).filter(is_active = True)
+            else:
+                 q = Q(title__icontains=keyword.capitalize()) | \
+                 Q(title__icontains=(keyword[0].lower() + keyword[1:]))
+                 bbs = Bb.objects.filter(q).filter(rubric=rubric_id).filter(is_active = True)
+            search_label = 'Объявления по запросу \"%s\"' % keyword
+            context = {'form':sf, 'bbs':bbs, 'search_label':search_label}
+            return render(request, 'main/index.html', context)
     else:
-        keyword = ''
-    form = SearchForm(initial = {'keyword':keyword})
-    paginator = Paginator(bbs, 2)
-    if 'page' in request.GET:
-        page_num = request.GET['page']
-    else:
-        page_num = 1
-    page = paginator.get_page(page_num)
-    context = {'rubric':rubric, 'page':page, 'bbs':page.object_list,
-               'form':form}
-    return render(request, 'main/by_rubric.html', context)
+        rubric = get_object_or_404(SubRubric, pk=pk)
+        bbs = Bb.objects.filter(is_active=True, rubric=pk)
+        if 'keyword' in request.GET:
+            keyword = request.GET['keyword']
+            q = Q(title__icontains=keyword) | Q(content__icontains=keyword)
+            bbs = bbs.filter(q).filter(is_active = True)
+        else:
+            keyword = ''
+        form = SearchForm(initial = {'keyword':keyword})
+        paginator = Paginator(bbs, 2)
+        if 'page' in request.GET:
+            page_num = request.GET['page']
+        else:
+            page_num = 1
+        page = paginator.get_page(page_num)
+        context = {'rubric':rubric, 'page':page, 'bbs':page.object_list,
+                   'form':form}
+        return render(request, 'main/by_rubric.html', context)
 
 def save_recent_bb(user, bb):
     if not user.is_authenticated:
@@ -206,11 +223,18 @@ def detail(request, rubric_pk, pk):
         sf = SearchForm(request.POST)
         if sf.is_valid():
             keyword = sf.cleaned_data['keyword']
-            rubric_id = sf.cleaned_data['rubric'].pk
-            bbs = Bb.objects.filter(title__icontains=keyword,
-                                    rubric=rubric_id)
-            context = {'form':sf, 'bbs':bbs}
-            return render(request, 'main/index2.html', context)
+            rubric = sf.cleaned_data['rubric']
+            rubric_id = rubric.pk
+            if rubric.name == 'Любая категория':
+                q = Q(title__icontains=keyword.capitalize()) | Q(title__icontains=(keyword[0].lower() + keyword[1:]))
+                bbs = Bb.objects.filter(q).filter(is_active = True)
+            else:
+                 q = Q(title__icontains=keyword.capitalize()) | \
+                 Q(title__icontains=(keyword[0].lower() + keyword[1:]))
+                 bbs = Bb.objects.filter(q).filter(rubric=rubric_id).filter(is_active = True)
+            search_label = 'Объявления по запросу \"%s\"' % keyword
+            context = {'form':sf, 'bbs':bbs, 'search_label':search_label}
+            return render(request, 'main/index.html', context)
     else:
         bb.views += 1
         bb.save()
@@ -234,11 +258,18 @@ def profile_bb_detail(request, pk):
         sf = SearchForm(request.POST)
         if sf.is_valid():
             keyword = sf.cleaned_data['keyword']
-            rubric_id = sf.cleaned_data['rubric'].pk
-            bbs = Bb.objects.filter(title__icontains=keyword,
-                                    rubric=rubric_id)
-            context = {'form':sf, 'bbs':bbs}
-            return render(request, 'main/index2.html', context)
+            rubric = sf.cleaned_data['rubric']
+            rubric_id = rubric.pk
+            if rubric.name == 'Любая категория':
+                q = Q(title__icontains=keyword.capitalize()) | Q(title__icontains=(keyword[0].lower() + keyword[1:]))
+                bbs = Bb.objects.filter(q).filter(is_active = True)
+            else:
+                 q = Q(title__icontains=keyword.capitalize()) | \
+                 Q(title__icontains=(keyword[0].lower() + keyword[1:]))
+                 bbs = Bb.objects.filter(q).filter(rubric=rubric_id).filter(is_active = True)
+            search_label = 'Объявления по запросу \"%s\"' % keyword
+            context = {'form':sf, 'bbs':bbs, 'search_label':search_label}
+            return render(request, 'main/index.html', context)
     else:
         bb.views += 1
         bb.save()
@@ -329,4 +360,4 @@ def by_superrubric(request, pk):
     rubric = get_object_or_404(SuperRubric, pk=pk)
     bbs = Bb.objects.filter(is_active=True, rubric__super_rubric=pk)
     context = {'rubric':rubric, 'bbs':bbs, 'search_label': rubric.name}
-    return render(request, 'main/index3.html', context)
+    return render(request, 'main/index.html', context)

@@ -83,7 +83,7 @@ class Bb(models.Model):
                                verbose_name = 'Автор объявления')
     is_active = models.BooleanField(default = True, db_index=True,
                                     verbose_name = 'Выводить в списке?')
-    created_at = models.DateField(auto_now_add=True, db_index=True,
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True,
                                   verbose_name = 'Опубликовано')
     views = models.IntegerField(default = 0, verbose_name = 'Просмотры')
     likes = models.ManyToManyField(AdvUser, related_name='bb_post')
@@ -96,6 +96,9 @@ class Bb(models.Model):
         for ai in self.additionalimage_set.all():
             ai.delete()
         super().delete(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return f'{self.rubric.id}/{self.id}'
 
     def __str__(self):
             return '%s - %s' % (self.rubric.name, self.title)
@@ -132,10 +135,10 @@ class Comment(models.Model):
         ordering = ['created_at']
 
 
-def post_save_dispatcher(sender, **kwargs):
-    author = kwargs['instance'].bb.author
-    if kwargs['created'] and author.send_messages:
-        send_new_comment_notification(kwargs['instance'])
+#def post_save_dispatcher(sender, **kwargs):
+#    author = kwargs['instance'].bb.author
+#    if kwargs['created'] and author.send_messages:
+#        send_new_comment_notification(kwargs['instance'])
 
 class PageHit(models.Model):
     url = models.CharField(unique=True, max_length = 999)
