@@ -1,5 +1,5 @@
 from django.shortcuts import render, reverse
-from django.http import HttpResponse, Http404, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, Http404, HttpResponseRedirect, JsonResponse, HttpResponseNotFound
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 from django.contrib import messages
@@ -297,6 +297,7 @@ def profile_bb_add(request):
             formset = AIFormSet()
     else:
         form = BbForm(initial={'author':request.user.pk})
+        form.fields['rubric'].queryset = SubRubric.objects.exclude(name = 'Любая категория')
         formset = AIFormSet()
     context = {'form':form, 'formset':formset}
     return render(request, 'main/profile_bb_add.html', context)
@@ -304,33 +305,40 @@ def profile_bb_add(request):
 @login_required
 def profile_bb_change(request, pk):
     bb = get_object_or_404(Bb, pk=pk)
-    if request.method == 'POST':
-        form = BbForm(request.POST, request.FILES, instance = bb)
-        if form.is_valid():
-            bb = form.save()
-            formset = AIFormSet(request.POST, request.FILES, instance=bb)
-            if formset.is_valid():
+    if bb.author == request.user:
+        if request.method == 'POST':
+            form = BbForm(request.POST, request.FILES, instance = bb)
+            if form.is_valid():
                 bb = form.save()
-                messages.add_message(request, messages.SUCCESS,
-                                     'Объявление исправлено')
-                return redirect('main:profile')
+                formset = AIFormSet(request.POST, request.FILES, instance=bb)
+                if formset.is_valid():
+                    bb = form.save()
+                    messages.add_message(request, messages.SUCCESS,
+                                         'Объявление исправлено')
+                    return redirect('main:profile')
+        else:
+            form = BbForm(instance = bb)
+            form.fields['rubric'].queryset = SubRubric.objects.exclude(name = 'Любая категория')
+            formset = AIFormSet(instance = bb)
+        context = {'form':form, 'formset':formset}
+        return render(request, 'main/profile_bb_change.html', context)
     else:
-        form = BbForm(instance = bb)
-        formset = AIFormSet(instance = bb)
-    context = {'form':form, 'formset':formset}
-    return render(request, 'main/profile_bb_change.html', context)
+        return HttpResponseNotFound()    
 
 @login_required
 def profile_bb_delete(request, pk):
     bb = get_object_or_404(Bb, pk = pk)
-    if request.method == 'POST':
-        bb.delete()
-        messages.add_message(request, messages.SUCCESS,
-                             'Объявление удалено')
-        return redirect('main:profile')
+    if bb.author == request.user:
+        if request.method == 'POST':
+            bb.delete()
+            messages.add_message(request, messages.SUCCESS,
+                                 'Объявление удалено')
+            return redirect('main:profile')
+        else:
+            context = {'bb':bb}
+            return render(request, 'main/profile_bb_delete.html', context)
     else:
-        context = {'bb':bb}
-        return render(request, 'main/profile_bb_delete.html', context)
+        return HttpResponseNotFound()
 
 
 @login_required
@@ -352,12 +360,32 @@ def LikeView(request):
 
 def foreign_user(request, pk):
     foreignuser = get_object_or_404(AdvUser, pk=pk)
-    bbs = Bb.objects.filter(author=foreignuser)
-    context = {'fuser':foreignuser, 'bbs':bbs}
-    return render(request, 'main/foreign_user.html', context)
+    if foreignuser == request.user:
+        return profile(request)
+    else:
+        bbs = Bb.objects.filter(author=foreignuser)
+        context = {'fuser':foreignuser, 'bbs':bbs}
+        return render(request, 'main/foreign_user.html', context)
 
 def by_superrubric(request, pk):
-    rubric = get_object_or_404(SuperRubric, pk=pk)
-    bbs = Bb.objects.filter(is_active=True, rubric__super_rubric=pk)
-    context = {'rubric':rubric, 'bbs':bbs, 'search_label': rubric.name}
-    return render(request, 'main/index.html', context)
+    if request.method == 'POST':
+        sf = SearchForm(request.POST)
+        if sf.is_valid():
+            keyword = sf.cleaned_data['keyword']
+            rubric = sf.cleaned_data['rubric']
+            rubric_id = rubric.pk
+            if rubric.name == 'Любая категория':
+                q = Q(title__icontains=keyword.capitalize()) | Q(title__icontains=(keyword[0].lower() + keyword[1:]))
+                bbs = Bb.objects.filter(q).filter(is_active = True)
+            else:
+                 q = Q(title__icontains=keyword.capitalize()) | \
+                 Q(title__icontains=(keyword[0].lower() + keyword[1:]))
+                 bbs = Bb.objects.filter(q).filter(rubric=rubric_id).filter(is_active = True)
+            search_label = 'Объявления по запросу \"%s\"' % keyword
+            context = {'form':sf, 'bbs':bbs, 'search_label':search_label}
+            return render(request, 'main/index.html', context)
+    else:
+        rubric = get_object_or_404(SuperRubric, pk=pk)
+        bbs = Bb.objects.filter(is_active=True, rubric__super_rubric=pk)
+        context = {'rubric':rubric, 'bbs':bbs, 'search_label': rubric.name}
+        return render(request, 'main/index.html', context)
