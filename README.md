@@ -10,4 +10,4 @@ pip install django-phonenumber-field<br>
 pip install channels<br>
 pip install phonenumbers<br>
 pip install django-simple-captcha<br>
-pip install django-bootstrap4
+pip install django-bootstrap4<br>
