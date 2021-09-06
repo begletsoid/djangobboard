@@ -9,9 +9,12 @@ class BbSerializer(serializers.ModelSerializer):
 
 
 class BbDetailSerializer(serializers.ModelSerializer):
+    rubric = serializers.SlugRelatedField(slug_field='name',
+                                          read_only=True)
     class Meta:
         model = Bb
-        fields = ('id', 'title', 'content', 'price', 'created_at',
+        fields = ('id', 'title', 'content', 'price', 'rubric',
+                  'created_at',
                   'contacts', 'image')
 
 
