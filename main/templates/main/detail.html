@@ -31,6 +31,7 @@
             <h2>{{ bb.title }}</h2>
             <div class="d-flex align-items-start">
                 {% csrf_token %}
+                {% if request.user.is_authenticated %}
                 {% if liked %}
                 <button name="bb_id" id="like-button" value="{{ bb.id }}"
                         class="btn btn-light border btn-sm mb-3 align-middle like-button">
@@ -43,6 +44,13 @@
                     <i class="far fa-heart" style="color:#009cf0;"></i>
                     Добавить в избранное
                 </button>
+                {% endif %}
+                {% else %}
+                <a name="bb_id" id="like-but" href="{% url 'main:login' %}"
+                        class="btn btn-light border btn-sm mb-3 align-middle like-button">
+                    <i class="far fa-heart" style="color:#009cf0;"></i>
+                    Добавить в избранное
+                </a>
                 {% endif %}
                 <span class="ml-2" style="margin-top: 4px">
                     {{ bb.created_at }}
