@@ -141,15 +141,17 @@
         </div>
         <div class="col-3">
             <h2 class="mb-5">{{ bb.price }} Руб.</h2>
-            <button type="button" class="btn btn-success btn-lg"
+            <button type="button" class="btn btn-success btn-lg mb-2"
                     data-toggle="modal" data-target="#PhoneNumber"
                     style="width: 310px; height: 66px;">
                 Показать телефон
             </button>
+            <!--
             <button type="button" class="btn btn-primary btn-lg mt-2 mb-4"
                     style="width: 310px; height: 66px;">
                 Написать сообщение
             </button>
+            -->
             <p class="mb-1">
                 <a  class="redlink" href="{% url 'main:foreign_user' bb.author.pk %}">
                     {{ bb.author.first_name }} {{ bb.author.last_name }}
