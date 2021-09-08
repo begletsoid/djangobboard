@@ -1,13 +1,1 @@
-pip install django<br>
-pip install bootstrap4<br>
-pip install django_cleanup<br>
-pip install easy_thumbnails<br>
-pip install captcha<br>
-pip install djangorestframework<br>
-pip install django-cors-headers<br>
-pip install django-crispy-forms<br>
-pip install django-phonenumber-field<br>
-pip install channels<br>
-pip install phonenumbers<br>
-pip install django-simple-captcha<br>
-pip install django-bootstrap4<br>
+pip install -r requirements.txt<br>
